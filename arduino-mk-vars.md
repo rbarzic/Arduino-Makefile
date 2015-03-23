@@ -111,6 +111,23 @@ ARDUINO_DIR = /Applications/Arduino.app/Contents/Resources/Java
 
 ----
 
+### ARDUINO_PLATFORM_LIB_PATH
+
+**Description:**
+
+Directory where the Arduino platform dependent libraries are stored.
+(Used only for Arduino 1.5.x)
+
+**Example:**
+
+```Makefile
+ARDUINO_PLATFORM_LIB_PATH = /usr/share/arduino/hardware/arduino/avr/libraries
+```
+
+**Requirement:** *Optional*
+
+----
+
 ### ARDUINO_VERSION
 
 **Description:**
@@ -123,6 +140,42 @@ Usually can be auto-detected as `AUTO_ARDUINO_VERSION` from `/usr/share/arduino/
 
 ```Makefile
 ARDUINO_VERSION = 105
+```
+
+**Requirement:** *Optional*
+
+----
+
+### ARCHITECTURE
+
+**Description:**
+
+Architecture for Arduino 1.5
+
+Defaults to unset for 1.0 or `avr` for 1.5
+
+**Example:**
+
+```Makefile
+ARCHITECTURE = sam
+```
+
+**Requirement:** *Optional*
+
+----
+
+### VENDOR
+
+**Description:**
+
+Board vendor/maintainer.
+
+Defaults to `arduino`
+
+**Example:**
+
+```Makefile
+VENDOR = sparkfun
 ```
 
 **Requirement:** *Optional*
@@ -220,6 +273,26 @@ BOARD_TAG = uno or mega2560
 
 ----
 
+### BOARD_SUB
+
+**Description:**
+
+1.5 submenu as listed in `boards.txt`
+
+**Example:**
+
+```Makefile
+# diecimila.name=Arduino Duemilanove or Diecimila
+BOARD_TAG=diecimila
+
+# diecimila.menu.cpu.atmega168=ATmega168
+BOARD_SUB=atmega168
+```
+
+**Requirement:** *Mandatory for 1.5 if using a submenu CPU*
+
+----
+
 ### MONITOR_PORT
 
 **Description:**
@@ -240,6 +313,25 @@ MONITOR_PORT = com3
 ```
 
 **Requirement:** *Mandatory*
+
+----
+
+### FORCE_MONITOR_PORT
+
+**Description:**
+
+Skip the MONITOR_PORT existance check.
+
+**Example:**
+
+```Makefile
+# Enable
+FORCE_MONITOR_PORT = true
+# Disable (default)
+undefine FORCE_MONITOR_PORT
+```
+
+**Requirement:** *Optional*
 
 ----
 
@@ -319,6 +411,29 @@ ARDUINO_VAR_PATH = ~/sketchbook/hardware/arduino-tiny/cores/tiny
 
 ----
 
+### CORE
+
+**Description:**
+
+Name of the core *inside* the ALTERNATE_CORE or the standard core.
+
+Usually can be auto-detected as `build.core` from `boards.txt`.
+
+**Example:**
+
+```Makefile
+# standard Arduino core (undefine ALTERNATE_CORE)
+CORE = arduino
+# or
+CORE = robot
+# tiny core (ALTERNATE_CORE = arduino-tiny)
+CORE = tiny
+```
+
+**Requirement:** *Optional*
+
+----
+
 ### VARIANT
 
 **Description:**
@@ -331,6 +446,32 @@ Usually can be auto-detected as `build.variant` from `boards.txt`.
 
 ```Makefile
 VARIANT = leonardo
+```
+
+**Requirement:** *Optional*
+
+----
+
+### USB_TYPE
+
+**Description:**
+
+Define Teensy 3.1 usb device type. Default is USB_SERIAL
+
+**Example:**
+
+```Makefile
+USB_TYPE = USB_SERIAL
+# or
+USB_TYPE = USB_HID
+# or
+USB_TYPE = USB_SERIAL_HID
+# or
+USB_TYPE = USB_MIDI
+# or
+USB_TYPE = USB_RAWHID
+# or
+USB_TYPE = USB_FLIGHTSIM
 ```
 
 **Requirement:** *Optional*
@@ -726,14 +867,146 @@ OPTIMIZATION_LEVEL = 3
 
 **Description:**
 
-Flags to pass to the C compiler.
+Controls, *exclusively*, which C standard is to be used for compilation.
 
-Defaults to `-std=gnu99`
+Defaults to `undefined`
+
+Possible values:
+
+*	With `avr-gcc 4.3`, shipped with the Arduino IDE:
+	*	`undefined`
+	*	`-std=c99`
+	*	`-std=gnu89` - This is the default for C code
+	*	`-std=gnu99`
+*	With `avr-gcc 4.7, 4.8 or 4.9`, installed by you
+	*	`undefined`
+	*	`-std=c99`
+	*	`-std=c11`
+	*	`-std=gnu89` - This is the default for C code
+	*	`-std=gnu99`
+	*	`-std=gnu11`
+
+For more information, please refer to the [Options Controlling C Dialect](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html)
 
 **Example:**
 
 ```Makefile
-<unset as per chipKIT.mk>
+CFLAGS_STD = = -std=gnu89
+```
+
+**Requirement:** *Optional*
+
+----
+
+### CXXFLAGS_STD
+
+**Description:**
+
+Controls, *exclusively*, which C++ standard is to be used for compilation.
+
+Defaults to `undefined`
+
+Possible values:
+
+*	With `avr-gcc 4.3`, shipped with the Arduino IDE:
+	*	`undefined`
+	*	`-std=c++98`
+	*	`-std=c++0x`
+	*	`-std=gnu++98` - This is the default for C code
+	*	`-std=gnu++0x`
+*	With `avr-gcc 4.7, 4.8 or 4.9`, installed by you
+	*	`undefined`
+	*	`-std=c++98`
+	*	`-std=c++11`
+	*	`-std=c++1y`
+	*	`-std=c++14`
+	*	`-std=gnu++98` - This is the default for C++ code
+	*	`-std=gnu++11`
+	*	`-std=gnu++1y`
+	*	`-std=gnu++14`
+
+For more information, please refer to the [Options Controlling C Dialect](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html)
+
+**Example:**
+
+```Makefile
+CXXFLAGS_STD = = -std=gnu++98
+```
+
+**Requirement:** *Optional*
+
+----
+
+### CFLAGS
+
+**Description:**
+
+Flags passed to compiler for files compiled as C. Add more flags to this
+variable using `+=`.
+
+Defaults to all flags required for a typical build.
+
+**Example:**
+
+```Makefile
+CFLAGS += -my-c-only-flag
+```
+
+**Requirement:** *Optional*
+
+----
+
+### CXXFLAGS
+
+**Description:**
+
+Flags passed to the compiler for files compiled as C++. Add more flags to this
+variable using `+=`.
+
+Defaults to all flags required for a typical build.
+
+**Example:**
+
+```Makefile
+CXXFLAGS += -my-c++-onlyflag
+```
+
+**Requirement:** *Optional*
+
+----
+
+### ASFLAGS
+
+**Description:**
+
+Flags passed to compiler for files compiled as assembly (e.g. `.S` files). Add
+more flags to this variable using `+=`.
+
+Defaults to all flags required for a typical build.
+
+**Example:**
+
+```Makefile
+ASFLAGS += -my-as-only-flag
+```
+
+**Requirement:** *Optional*
+
+----
+
+### CPPFLAGS
+
+**Description:**
+
+Flags passed to the C pre-processor (for C, C++ and assembly source flies). Add
+more flags to this variable using `+=`.
+
+Defaults to all flags required for a typical build.
+
+**Example:**
+
+```Makefile
+CPPFLAGS += -DMY_DEFINE_FOR_ALL_SOURCE_TYPES
 ```
 
 **Requirement:** *Optional*
@@ -990,7 +1263,7 @@ AVRDUDE_ISP_BAUDRATE = 19200
 
 Options to pass to `avrdude`.
 
-Defaults to `-q -V -D` (quiet, don't verify, don't auto-erase). User values are not *ANDed* to the defaults, you have to set each option you require.
+Defaults to `-q -V` (quiet, don't verify). User values are not *ANDed* to the defaults, you have to set each option you require.
 
 **Example:**
 
@@ -1029,6 +1302,8 @@ BOOTLOADER_FILE = optiboot_atmega328.hex
 Relative path to bootloader directory.
 
 Usually can be auto-detected as a relative `bootloader.path` from `boards.txt`
+
+Deprecated in 1.5, now part of bootloader.file
 
 **Example:**
 
